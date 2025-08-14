@@ -1,3 +1,7 @@
 jsconfig.js
 node_modules/
 plant.txt
+eslint.config.mjs
+package.json
+package-lock.json
+jsconfig.json
