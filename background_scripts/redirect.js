@@ -1,12 +1,49 @@
-function logURL(requestDetails) {
-  if (!requestDetails.url.includes("leetcode")) {
-    console.log(`Loading: ${requestDetails.url}`);
+function redirectUrl(request) {
+  if (!request.url.includes("leetcode")) {
+    console.log(`Loading: ${request.url}`);
     return { redirectUrl: "https://leetcode.com/", };
   }
   console.log("nothing to do already on leetcode")
 }
 
-browser.webRequest.onBeforeRequest.addListener(logURL, {
-  urls: ["<all_urls>"],
+function checkSubmission(request) {
+  let filter = browser.webRequest.filterResponseData(request.requestId)
+  let decoder = new TextDecoder('utf-8')
+
+  // Handle getting the response object
+  filter.ondata = (event) => {
+    let stringResponse = decoder.decode(event.data, {stream: true})
+    const response = JSON.parse(stringResponse)
+    console.log(response)
+    
+    // Once submitted check status code
+    if (response.state === 'SUCCESS') {
+      if (response.status_code === 10) {
+        console.log('Congrats! You submitted the problem')
+      }
+      else {
+        console.log(":( you are a noob")
+      }
+    }
+    filter.write(event.data)
+  }
+
+  // Handle closting the stream
+  filter.onstop = () => {
+    filter.close()
+  }
+
+  // Check if 
+}
+
+// Block any of the added websites before leetcode problem is solved
+browser.webRequest.onBeforeRequest.addListener(redirectUrl, {
+  urls: ['*://*.youtube.com/*'],
+},
+  ['blocking']);
+
+// Handle any requests sent when a problem is solved
+browser.webRequest.onBeforeRequest.addListener(checkSubmission, {
+  urls: ['*://*.leetcode.com/submissions/detail/*/check/'],
 },
   ['blocking']);

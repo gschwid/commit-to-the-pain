@@ -10,8 +10,9 @@
         "webNavigation",
         "webRequestBlocking",
         "tabs",
-        "<all_urls>",
-        "cookies"
+        "*://*/*",
+        "cookies",
+        "webRequestFilterResponse.serviceWorkerScript"
     ],
 
     "background" : {
