@@ -6,16 +6,48 @@ function redirectUrl(request) {
   console.log("nothing to do already on leetcode")
 }
 
+async function getRandomProblem(difficulty) {
+  const query = `
+  query {
+    problemsetQuestionListV2(
+      filters: {
+        filterCombineType: ALL,
+        premiumFilter: { premiumStatus: [], operator: IS }
+        statusFilter: {questionStatuses: [SOLVED], operator: IS_NOT}
+        difficultyFilter: {difficulties:[${difficulty}], operator: IS}
+      }
+      limit: 1
+    ) {
+      questions {
+        title
+        difficulty
+        paidOnly
+        questionFrontendId
+      }
+    }
+  }`
+
+  fetch("https://leetcode.com/graphql", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ query }),
+  })
+    .then(res => res.json())
+    .then(data => console.log(data))
+
+}
+
 function checkSubmission(request) {
   let filter = browser.webRequest.filterResponseData(request.requestId)
   let decoder = new TextDecoder('utf-8')
 
   // Handle getting the response object
   filter.ondata = (event) => {
-    let stringResponse = decoder.decode(event.data, {stream: true})
+    let stringResponse = decoder.decode(event.data, { stream: true })
     const response = JSON.parse(stringResponse)
-    console.log(response)
-    
+
     // Once submitted check status code
     if (response.state === 'SUCCESS') {
       if (response.status_code === 10) {
@@ -23,6 +55,7 @@ function checkSubmission(request) {
       }
       else {
         console.log(":( you are a noob")
+        console.log(getRandomProblem('EASY'))
       }
     }
     filter.write(event.data)
@@ -32,8 +65,6 @@ function checkSubmission(request) {
   filter.onstop = () => {
     filter.close()
   }
-
-  // Check if 
 }
 
 // Block any of the added websites before leetcode problem is solved
