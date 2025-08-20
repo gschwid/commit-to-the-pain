@@ -7,36 +7,41 @@ function redirectUrl(request) {
 }
 
 async function getRandomProblem(difficulty) {
+  let csrfToken = ''
+  try {
+    let result = await browser.storage.local.get('leetcodeCsrfToken')
+    csrfToken = result.leetcodeCsrfToken
+  } catch (e) {
+    console.log("Failed to get CSRF token", e)
+  }
+  console.log('this is the token', csrfToken)
+
   const query = `
   query {
-    problemsetQuestionListV2(
+    randomQuestionV2(
       filters: {
-        filterCombineType: ALL,
-        premiumFilter: { premiumStatus: [], operator: IS }
-        statusFilter: {questionStatuses: [SOLVED], operator: IS_NOT}
+        premiumFilter: { premiumStatus: [PREMIUM], operator: IS_NOT }
         difficultyFilter: {difficulties:[${difficulty}], operator: IS}
       }
-      limit: 1
     ) {
-      questions {
-        title
-        difficulty
-        paidOnly
-        questionFrontendId
+      categorySlug	"all-code-essentials"
       }
-    }
-  }`
-
-  fetch("https://leetcode.com/graphql", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({ query }),
-  })
-    .then(res => res.json())
-    .then(data => console.log(data))
-
+    }`
+  try {
+    const response = await fetch("https://leetcode.com/graphql", {
+      method: "POST",
+      body: JSON.stringify({ query }),
+      headers: {
+        "Content-Type": "application/json",
+        'x-csrftoken': csrfToken,
+        "Referer": "https://leetcode.com/problemset/",
+      },
+      credentials: "include"
+    })
+    console.log(response)
+  } catch (e) {
+    console.log(`Error generating random problem: ${e}`)
+  }
 }
 
 function checkSubmission(request) {

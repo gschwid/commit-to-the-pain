@@ -3,7 +3,6 @@
     "name": "Suffering",
     "version": "1.0",
     "description": "Tool to help you with coding practice",
-
     "permissions": [
         "storage",
         "webRequest",
@@ -14,11 +13,21 @@
         "cookies",
         "webRequestFilterResponse.serviceWorkerScript"
     ],
-
-    "background" : {
-        "scripts" : ["background_scripts/redirect.js"],
+    "background": {
+        "scripts": [
+            "background_scripts/redirect.js"
+        ],
         "persistent": false,
         "type": "module"
-
-    }
-} 
+    },
+    "content_scripts": [
+        {
+            "matches": [
+                "*://*.leetcode.com/*"
+            ],
+            "js": [
+                "content_scripts/get-csrf-token.js"
+            ]
+        }
+    ]
+}
