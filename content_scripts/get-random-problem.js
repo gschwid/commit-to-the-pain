@@ -4,7 +4,9 @@ async function checkRandomProblemFlag() {
     return result
 }
 
-function handleProblemGeneration(result) {
+
+
+async function handleProblemGeneration(result) {
     const generateProblemFlag = result.generateProblemFlag
     if (generateProblemFlag) {
         console.log("Sending query to the leetcode backend to generate a problem...")
@@ -16,6 +18,32 @@ function handleProblemGeneration(result) {
             }
         }
         console.log(leetcodeCsrfToken)
+        const difficulty = "EASY"
+        const query = `
+        query {
+            randomQuestionV2(
+            filters: {
+                premiumFilter: { premiumStatus: [PREMIUM], operator: IS_NOT }
+                difficultyFilter: {difficulties:[${difficulty}], operator: IS}
+            }
+            ) {
+            categorySlug	"all-code-essentials"
+            }
+            }`
+        try {
+            const response = await fetch("https://leetcode.com/graphql", {
+                method: "POST",
+                body: JSON.stringify({ query }),
+                headers: {
+                    "Content-Type": "application/json",
+                    'x-csrftoken': leetcodeCsrfToken,
+                },
+                credentials: "include"
+            })
+            console.log(response)
+        } catch (e) {
+            console.log(`Error generating random problem: ${e}`)
+        }
     }
 }
 
