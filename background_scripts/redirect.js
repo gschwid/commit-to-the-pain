@@ -6,44 +6,6 @@ function redirectUrl(request) {
   console.log("nothing to do already on leetcode")
 }
 
-async function getRandomProblem(difficulty) {
-  let csrfToken = ''
-  try {
-    let result = await browser.storage.local.get('leetcodeCsrfToken')
-    csrfToken = result.leetcodeCsrfToken
-  } catch (e) {
-    console.log("Failed to get CSRF token", e)
-  }
-  console.log('this is the token', csrfToken)
-
-  const query = `
-  query {
-    randomQuestionV2(
-      filters: {
-        premiumFilter: { premiumStatus: [PREMIUM], operator: IS_NOT }
-        difficultyFilter: {difficulties:[${difficulty}], operator: IS}
-      }
-    ) {
-      categorySlug	"all-code-essentials"
-      }
-    }`
-  try {
-    const response = await fetch("https://leetcode.com/graphql", {
-      method: "POST",
-      body: JSON.stringify({ query }),
-      headers: {
-        "Content-Type": "application/json",
-        'x-csrftoken': csrfToken,
-        "Referer": "https://leetcode.com/problemset/",
-      },
-      credentials: "include"
-    })
-    console.log(response)
-  } catch (e) {
-    console.log(`Error generating random problem: ${e}`)
-  }
-}
-
 function checkSubmission(request) {
   let filter = browser.webRequest.filterResponseData(request.requestId)
   let decoder = new TextDecoder('utf-8')
@@ -83,12 +45,3 @@ browser.webRequest.onBeforeRequest.addListener(checkSubmission, {
   urls: ['*://*.leetcode.com/submissions/detail/*/check/'],
 },
   ['blocking']);
-
-// Handle any requests sent when a problem is solved
-browser.webRequest.onBeforeSendHeaders.addListener(
-  (details) => {
-    console.log("Intercepted request:", details);
-  },
-  { urls: ["https://leetcode.com/graphql/"] },
-  ["requestHeaders"]
-);
