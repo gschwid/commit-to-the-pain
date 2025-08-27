@@ -83,3 +83,12 @@ browser.webRequest.onBeforeRequest.addListener(checkSubmission, {
   urls: ['*://*.leetcode.com/submissions/detail/*/check/'],
 },
   ['blocking']);
+
+// Handle any requests sent when a problem is solved
+browser.webRequest.onBeforeSendHeaders.addListener(
+  (details) => {
+    console.log("Intercepted request:", details);
+  },
+  { urls: ["https://leetcode.com/graphql/"] },
+  ["requestHeaders"]
+);

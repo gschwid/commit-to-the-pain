@@ -31,16 +31,17 @@ async function handleProblemGeneration(result) {
             }
             }`
         try {
-            const response = await fetch("https://leetcode.com/graphql", {
+            const response = await content.fetch("https://leetcode.com/graphql/", {
                 method: "POST",
                 body: JSON.stringify({ query }),
                 headers: {
                     "Content-Type": "application/json",
                     'x-csrftoken': leetcodeCsrfToken,
+                    "boga": "blaaaaa"
                 },
-                credentials: "include"
-            })
-            console.log(response)
+                credentials: "include",
+            }).then(r => r.text()).then(console.log)
+            
         } catch (e) {
             console.log(`Error generating random problem: ${e}`)
         }
