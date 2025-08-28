@@ -44,6 +44,8 @@ async function handleProblemGeneration(result) {
             })
             const randomProblemObject = await response.json()
             const randomProblem = randomProblemObject.data.randomQuestionV2.titleSlug
+
+            // Load the randomly generated problem
             browser.storage.local.set({ 'generateProblemFlag': false })
             window.location.replace(`https://leetcode.com/problems/${randomProblem}/description`)
 
@@ -53,13 +55,6 @@ async function handleProblemGeneration(result) {
     }
 }
 
-// TODO: set this somehow in the background script
 checkRandomProblemFlag().then(handleProblemGeneration)
-
-
-// new plan
-// set a flag when you redirect to leetcode to generate a random problem
-// in this script, check for the flag, then send the query from the website so it allows to get user info
-// set the flag to false, then redirect to the random problem. 
 
 // Need to consider how to handle the situation when a user is not signed in, that will be tricky.

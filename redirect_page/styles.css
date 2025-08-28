@@ -1,0 +1,25 @@
+body {
+  background-color: #f4f4f4;
+  margin: 20px;
+  font-family: Helvetica, sans-serif;
+}
+
+h1 {
+  color: rgb(0, 0, 0);
+  text-align: center;
+}
+
+button {
+  background: orange;
+  border: none;
+  padding: 10px 15px;
+  border-radius: 8px;
+  cursor: pointer;
+  width: 100px;
+  height: auto;
+}
+
+button:hover {
+  background: darkorange;
+}
+

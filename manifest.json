@@ -21,9 +21,13 @@
         "type": "module"
     },
     "web_accessible_resources": [
-    "SelectProblem.html",
-    "select_problem.js"
-  ],
+        "redirect_page/SelectProblem.html",
+        "redirect_page/select_problem.js"
+    ],
+    "icons": {
+    "32": "icon.png",
+    "64": "icon.png"
+  },
     "content_scripts": [
         {
             "matches": [
