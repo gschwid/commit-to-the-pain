@@ -20,6 +20,11 @@
         "persistent": false,
         "type": "module"
     },
+    "browser_action": {
+    "default_icon": "icon.png",
+    "default_title": "Commit To The Pain",
+    "default_popup": "popup/popup.html"
+  },
     "web_accessible_resources": [
         "redirect_page/SelectProblem.html",
         "redirect_page/select_problem.js"
