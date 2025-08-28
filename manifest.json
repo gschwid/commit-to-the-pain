@@ -21,7 +21,8 @@
         "type": "module"
     },
     "web_accessible_resources": [
-    "SelectProblem.html"
+    "SelectProblem.html",
+    "select_problem.js"
   ],
     "content_scripts": [
         {

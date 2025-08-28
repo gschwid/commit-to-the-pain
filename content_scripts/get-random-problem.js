@@ -42,8 +42,11 @@ async function handleProblemGeneration(result) {
                     'x-csrftoken': leetcodeCsrfToken,
                 },
             })
-            const randomProblem = await response.json()
-            console.log(randomProblem)
+            const randomProblemObject = await response.json()
+            const randomProblem = randomProblemObject.data.randomQuestionV2.titleSlug
+            browser.storage.local.set({ 'generateProblemFlag': false })
+            window.location.replace(`https://leetcode.com/problems/${randomProblem}/description`)
+
         } catch (e) {
             console.log(`Error generating random problem: ${e}`)
         }
@@ -51,7 +54,6 @@ async function handleProblemGeneration(result) {
 }
 
 // TODO: set this somehow in the background script
-browser.storage.local.set({ 'generateProblemFlag': true })
 checkRandomProblemFlag().then(handleProblemGeneration)
 
 
