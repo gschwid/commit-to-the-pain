@@ -1,7 +1,8 @@
 function redirectUrl(request) {
   if (!request.url.includes("leetcode")) {
     console.log(`Loading: ${request.url}`);
-    return { redirectUrl: "https://leetcode.com/", };
+    const problemPage = browser.runtime.getURL("SelectProblem.html")
+    return { redirectUrl: problemPage}
   }
   console.log("nothing to do already on leetcode")
 }

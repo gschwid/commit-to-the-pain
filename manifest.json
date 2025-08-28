@@ -20,6 +20,9 @@
         "persistent": false,
         "type": "module"
     },
+    "web_accessible_resources": [
+    "SelectProblem.html"
+  ],
     "content_scripts": [
         {
             "matches": [
