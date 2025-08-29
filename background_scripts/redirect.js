@@ -8,6 +8,13 @@ function redirectUrl(request) {
   console.log("nothing to do already on leetcode")
 }
 
+function initializeExtension() {
+  console.log("this is a test")
+  browser.tabs.create({
+    url: "setup.html"
+  })
+}
+
 function checkSubmission(request) {
   let filter = browser.webRequest.filterResponseData(request.requestId)
   let decoder = new TextDecoder('utf-8')
@@ -47,3 +54,6 @@ browser.webRequest.onBeforeRequest.addListener(checkSubmission, {
   urls: ['*://*.leetcode.com/submissions/detail/*/check/'],
 },
   ['blocking']);
+
+// Handle the initial setup for the extension
+browser.runtime.onInstalled.addListener(initializeExtension)
