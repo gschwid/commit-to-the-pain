@@ -11,7 +11,7 @@ function redirectUrl(request) {
 function initializeExtension() {
   console.log("this is a test")
   browser.tabs.create({
-    url: "setup.html"
+    url: "setup_page/setup.html"
   })
 }
 
