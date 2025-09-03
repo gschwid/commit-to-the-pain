@@ -9,12 +9,11 @@
 
 <body>
     <p>What websites do you want to block?</p>
-    <form>
-        <div id="list">
-        </div>
+    <form id="addWebsiteForm">
+        <input type="text" placeholder="example.com" id="website" name="website">
+        <input type="submit" hidden />
+        <script src="setup.js"></script>
     </form>
-    <button id="addWebsiteButton">Add Website</button>
-    <script src="setup.js"></script>
 </body>
 
 </html>

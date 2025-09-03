@@ -1,15 +1,30 @@
-function createInputElement() {
-    console.log('You clicked the button')
-    const list = document.getElementById('list')
-    const newInput = document.createElement('input')
-    newInput.setAttribute('type', 'text')
-    newInput.setAttribute('placeholder', 'example.com')
-    newInput.setAttribute('id', `website${count}`)
-    newInput.setAttribute('name', `website${count}`)
-    count++
-    list.appendChild(newInput)
+function updateLocalStorage(result) {
+    let blocked = result.blocked
+    if (blocked === undefined) {
+        console.log("bru")
+    }
 }
 
-let count = 0
-document.getElementById('addWebsiteButton')
-    .addEventListener("click", createInputElement)
+async function displayWebsite() {
+    event.preventDefault()
+    const formData = new FormData(document.getElementById("addWebsiteForm"))
+    const url = formData.get('website')
+    const result = await browser.storage.local.get('blocked')
+    let blockedUrls = result.blocked
+    if (blockedUrls === undefined) {
+        browser.storage.local.set({
+            blocked: [url]
+        })
+    } else {
+        blockedUrls.push(url)
+        browser.storage.local.set({
+            blocked: blockedUrls
+        })
+    }
+
+    const updated = await browser.storage.local.get('blocked')
+    console.log(updated)
+}
+
+document.getElementById("addWebsiteForm")
+    .addEventListener("submit", displayWebsite)
