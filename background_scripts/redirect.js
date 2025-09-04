@@ -9,7 +9,6 @@ function redirectUrl(request) {
 }
 
 function initializeExtension() {
-  console.log("this is a test")
   browser.tabs.create({
     url: "setup_page/setup.html"
   })
@@ -43,6 +42,19 @@ function checkSubmission(request) {
   }
 }
 
+// Updates the filter array when a website is added or removed
+async function updateFilter(changes, area) {
+  console.log("updating filter...")
+  try{
+  const result = await browser.storage.local.get('blocked')
+  const blockedUrls = result.blocked
+  const filter = blockedUrls.map((url) => `*://*.${url}/*`)
+  console.log("wat the crap")
+  } catch(e) {
+    console.log("Counldnt fetch local storage", e)
+  }
+}
+
 // Block any of the added websites before leetcode problem is solved
 browser.webRequest.onBeforeRequest.addListener(redirectUrl, {
   urls: ['*://*.youtube.com/*'],
@@ -57,3 +69,6 @@ browser.webRequest.onBeforeRequest.addListener(checkSubmission, {
 
 // Handle the initial setup for the extension
 browser.runtime.onInstalled.addListener(initializeExtension)
+
+browser.storage.local.onChanged.addListener(() =>
+  console.log("logged it"))

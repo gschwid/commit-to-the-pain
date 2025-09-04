@@ -1,30 +1,27 @@
-function updateLocalStorage(result) {
-    let blocked = result.blocked
-    if (blocked === undefined) {
-        console.log("bru")
-    }
-}
 
-async function displayWebsite() {
+
+
+async function updateLocalStorage() {
     event.preventDefault()
     const formData = new FormData(document.getElementById("addWebsiteForm"))
     const url = formData.get('website')
-    const result = await browser.storage.local.get('blocked')
-    let blockedUrls = result.blocked
-    if (blockedUrls === undefined) {
-        browser.storage.local.set({
-            blocked: [url]
-        })
-    } else {
-        blockedUrls.push(url)
-        browser.storage.local.set({
-            blocked: blockedUrls
-        })
+    try {
+        const result = await browser.storage.local.get('blocked')
+        let blockedUrls = result.blocked
+        if (blockedUrls === undefined) {
+            await browser.storage.local.set({
+                blocked: [url]
+            })
+        } else {
+            blockedUrls.push(url)
+            await browser.storage.local.set({
+                blocked: blockedUrls
+            })
+        }
+    } catch (e) {
+        console.error("Could not fetch browser storage", e)
     }
-
-    const updated = await browser.storage.local.get('blocked')
-    console.log(updated)
 }
 
 document.getElementById("addWebsiteForm")
-    .addEventListener("submit", displayWebsite)
+    .addEventListener("submit", updateLocalStorage)
