@@ -1,6 +1,3 @@
-
-
-
 async function updateLocalStorage() {
     event.preventDefault()
     const formData = new FormData(document.getElementById("addWebsiteForm"))
@@ -20,6 +17,19 @@ async function updateLocalStorage() {
         }
     } catch (e) {
         console.error("Could not fetch browser storage", e)
+    }
+
+    displayBlockedWebsite(url)
+}
+
+async function displayBlockedWebsite(url) {
+    try {
+        const response = await fetch(`https://${url}/favicon.ico`)
+        const result = await response.blob();
+        console.log(result)
+    }
+    catch(e) {
+        console.log("Failed to get favicon", e)
     }
 }
 
