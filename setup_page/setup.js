@@ -18,15 +18,19 @@ async function updateLocalStorage() {
     } catch (e) {
         console.error("Could not fetch browser storage", e)
     }
-
     displayBlockedWebsite(url)
 }
 
 async function displayBlockedWebsite(url) {
     try {
-        const response = await fetch(`https://${url}/favicon.ico`)
-        const result = await response.blob();
-        console.log(result)
+        console.log('adding image')
+        const response = await fetch(`https://www.${url}/favicon.ico`)
+        const blob = await response.blob()
+        let uri = URL.createObjectURL(blob)
+        let img = new Image()
+        img.src = uri
+        const list = document.getElementById("websiteList")
+        list.appendChild(img);
     }
     catch(e) {
         console.log("Failed to get favicon", e)
