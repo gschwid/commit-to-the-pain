@@ -3,7 +3,7 @@ function redirectUrl(request) {
     console.log(`Loading: ${request.url}`);
     const problemPage = browser.runtime.getURL("redirect_page/SelectProblem.html")
     console.log(problemPage)
-    return { redirectUrl: problemPage}
+    return { redirectUrl: problemPage }
   }
   console.log("nothing to do already on leetcode")
 }
@@ -45,21 +45,22 @@ function checkSubmission(request) {
 // Updates the filter array when a website is added or removed
 async function updateFilter(changes, area) {
   console.log("updating filter...")
-  try{
-  const result = await browser.storage.local.get('blocked')
-  const blockedUrls = result.blocked
-  const filter = blockedUrls.map((url) => `*://*.${url}/*`)
-  console.log("wat the crap")
-  } catch(e) {
+  try {
+    const result = await browser.storage.local.get('blocked')
+    const blockedUrls = result.blocked
+    const filter = blockedUrls.map((url) => `*://*.${url}/*`)
+    browser.webRequest.onBeforeRequest.removeListener(redirectUrl)
+
+    // Create the listener with the new filter.
+    browser.webRequest.onBeforeRequest.addListener(redirectUrl, {
+      urls: filter,
+    },
+      ['blocking']);
+
+  } catch (e) {
     console.log("Counldnt fetch local storage", e)
   }
 }
-
-// Block any of the added websites before leetcode problem is solved
-browser.webRequest.onBeforeRequest.addListener(redirectUrl, {
-  urls: ['*://*.youtube.com/*'],
-},
-  ['blocking']);
 
 // Handle any requests sent when a problem is solved
 browser.webRequest.onBeforeRequest.addListener(checkSubmission, {
@@ -70,5 +71,4 @@ browser.webRequest.onBeforeRequest.addListener(checkSubmission, {
 // Handle the initial setup for the extension
 browser.runtime.onInstalled.addListener(initializeExtension)
 
-browser.storage.local.onChanged.addListener(() =>
-  console.log("logged it"))
+browser.storage.onChanged.addListener(updateFilter)
