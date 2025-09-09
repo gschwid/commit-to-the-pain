@@ -49,7 +49,7 @@ async function updateFilter(changes, area) {
     const result = await browser.storage.local.get('blocked')
     const blockedUrls = result.blocked
     let filter = []
-    if (blockedUrls == []) {
+    if (blockedUrls != []) {
       filter = blockedUrls.map((url) => `*://*.${url}/*`)
       browser.webRequest.onBeforeRequest.removeListener(redirectUrl)
 
