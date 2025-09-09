@@ -1,17 +1,25 @@
 function redirectUrl(request) {
-  if (!request.url.includes("leetcode")) {
     console.log(`Loading: ${request.url}`);
     const problemPage = browser.runtime.getURL("redirect_page/SelectProblem.html")
     console.log(problemPage)
     return { redirectUrl: problemPage }
-  }
-  console.log("nothing to do already on leetcode")
 }
 
-function initializeExtension() {
+function initializeExtension(details) {
+  if (details.reason === "install") {
+    let date = new Date()
+    date.setHours(0,0,0,0)
+  // Create variable to check if leetcode problem has been solved
+  browser.storage.local.set({
+    sovledLeetcodeProblem: [false, date],
+    blocked: []
+  })
+
+  // Redirect to the setup page for the extension
   browser.tabs.create({
     url: "setup_page/setup.html"
   })
+}
 }
 
 function checkSubmission(request) {
@@ -26,11 +34,14 @@ function checkSubmission(request) {
     // Once submitted check status code
     if (response.state === 'SUCCESS') {
       if (response.status_code === 10) {
-        console.log('Congrats! You submitted the problem')
-      }
-      else {
-        console.log(":( you are a noob")
-        console.log(getRandomProblem('EASY'))
+        console.log('rproblem solved')
+
+        // Update browser storage to reflect solved problem
+        let date = new Date()
+        date.setHours(0,0,0,0)
+        browser.storage.local.set({
+          sovledLeetcodeProblem: [true, date]
+        })
       }
     }
     filter.write(event.data)
@@ -46,10 +57,21 @@ function checkSubmission(request) {
 async function updateFilter(changes, area) {
   console.log("updating filter...")
   try {
-    const result = await browser.storage.local.get('blocked')
+    const result = await browser.storage.local.get(['blocked', 'sovledLeetcodeProblem'])
+    console.log(result)
     const blockedUrls = result.blocked
+    const solved = result.sovledLeetcodeProblem
     let filter = []
-    if (blockedUrls != []) {
+
+    // check if problem has been solved
+    if(solved[0] === true) {
+      let date = new Date()
+      date.setHours(0, 0, 0, 0)
+    }
+
+
+    // Need to add a newly addded website to filter
+    if (blockedUrls.length !== 0) {
       filter = blockedUrls.map((url) => `*://*.${url}/*`)
       browser.webRequest.onBeforeRequest.removeListener(redirectUrl)
 

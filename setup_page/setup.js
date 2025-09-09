@@ -6,15 +6,8 @@ async function updateLocalStorage() {
         const result = await browser.storage.local.get('blocked')
         let blockedUrls = result.blocked
 
-        // Check if the url has been defined.
-        if (blockedUrls === undefined) {
-            await browser.storage.local.set({
-                blocked: [url]
-            })
-        }
-
         // Check if form submission already in list
-        else if (blockedUrls.includes(url)) {
+        if (blockedUrls.includes(url)) {
             console.log("This exists!")
             return
         }
