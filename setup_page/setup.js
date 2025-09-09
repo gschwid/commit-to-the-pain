@@ -47,15 +47,20 @@ async function displayBlockedWebsite(url) {
 
         // Create the text the website will use
         const name = url.split(".", 1)[0]
-        console.log(name)
         const listEntry = document.createElement("li")
         listEntry.textContent = name.charAt(0).toUpperCase() + name.slice(1)
 
         // Put the image and name in their div
         const webDiv = document.createElement("div")
-        webDiv.id = "website"
+        webDiv.id = url
         webDiv.appendChild(img)
         webDiv.appendChild(listEntry)
+
+        // Put a delete button
+        const deleteButton = document.createElement("button")
+        deleteButton.onclick = deleteWebsite
+        deleteButton.name = url
+        webDiv.appendChild(deleteButton)
         
         const list = document.getElementById("websiteList")
         list.appendChild(webDiv);
@@ -64,6 +69,27 @@ async function displayBlockedWebsite(url) {
         console.log("Failed to get favicon", e)
     }
 }
+
+async function deleteWebsite(event) {
+    const divId = event.target.name
+    document.getElementById(divId).remove()
+
+    try {
+        const result = await browser.storage.local.get('blocked')
+        let newUrls = result.blocked
+        console.log(newUrls)
+        newUrls = newUrls.filter(url => url != divId)
+        await browser.storage.local.set({
+                blocked: newUrls
+            })
+
+    } catch(e) {
+        console.error("Could not fetch browser storage", e)
+    }
+    const result = await browser.storage.local.get('blocked')
+    let blockedUrls = result.blocked
+    console.log(blockedUrls)
+}   
 
 document.getElementById("addWebsiteForm")
     .addEventListener("submit", updateLocalStorage)

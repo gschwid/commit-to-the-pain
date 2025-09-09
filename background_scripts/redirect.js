@@ -48,14 +48,20 @@ async function updateFilter(changes, area) {
   try {
     const result = await browser.storage.local.get('blocked')
     const blockedUrls = result.blocked
-    const filter = blockedUrls.map((url) => `*://*.${url}/*`)
-    browser.webRequest.onBeforeRequest.removeListener(redirectUrl)
+    let filter = []
+    if (blockedUrls == []) {
+      filter = blockedUrls.map((url) => `*://*.${url}/*`)
+      browser.webRequest.onBeforeRequest.removeListener(redirectUrl)
 
-    // Create the listener with the new filter.
-    browser.webRequest.onBeforeRequest.addListener(redirectUrl, {
-      urls: filter,
-    },
-      ['blocking']);
+      // Create the listener with the new filter.
+      browser.webRequest.onBeforeRequest.addListener(redirectUrl, {
+        urls: filter,
+      },
+        ['blocking']);
+    }
+    else {
+      browser.webRequest.onBeforeRequest.removeListener(redirectUrl)
+    }
 
   } catch (e) {
     console.log("Counldnt fetch local storage", e)
