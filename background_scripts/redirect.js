@@ -8,10 +8,10 @@ function redirectUrl(request) {
 function initializeExtension(details) {
   if (details.reason === "install") {
     let date = new Date()
-    date.setHours(0,0,0,0)
+    date.setFullYear(1969) // Super old date so they wont match
   // Create variable to check if leetcode problem has been solved
   browser.storage.local.set({
-    sovledLeetcodeProblem: [false, date],
+    lastSolvedProblem: date,
     blocked: []
   })
 
@@ -40,7 +40,7 @@ function checkSubmission(request) {
         let date = new Date()
         date.setHours(0,0,0,0)
         browser.storage.local.set({
-          sovledLeetcodeProblem: [true, date]
+          lastSolvedProblem: date
         })
       }
     }
@@ -57,21 +57,28 @@ function checkSubmission(request) {
 async function updateFilter(changes, area) {
   console.log("updating filter...")
   try {
-    const result = await browser.storage.local.get(['blocked', 'sovledLeetcodeProblem'])
-    console.log(result)
+    const result = await browser.storage.local.get(['blocked', 'lastSolvedProblem'])
     const blockedUrls = result.blocked
-    const solved = result.sovledLeetcodeProblem
+    const lastSolvedDate = result.lastSolvedProblem
     let filter = []
 
     // check if problem has been solved
-    if(solved[0] === true) {
       let date = new Date()
       date.setHours(0, 0, 0, 0)
-    }
+      console.log(lastSolvedDate, date)
+      if (lastSolvedDate.getTime() === date.getTime() || blockedUrls.length === 0) {
+        if (lastSolvedDate.getTime() === date.getTime()) {
+          console.log("You already solved your problem for the day!")
+        }
+        else {
+          console.log("Nothing in the blocked list")
+        }
+        browser.webRequest.onBeforeRequest.removeListener(redirectUrl)
 
+      }
 
     // Need to add a newly addded website to filter
-    if (blockedUrls.length !== 0) {
+    else if (blockedUrls.length !== 0) {
       filter = blockedUrls.map((url) => `*://*.${url}/*`)
       browser.webRequest.onBeforeRequest.removeListener(redirectUrl)
 
@@ -80,9 +87,6 @@ async function updateFilter(changes, area) {
         urls: filter,
       },
         ['blocking']);
-    }
-    else {
-      browser.webRequest.onBeforeRequest.removeListener(redirectUrl)
     }
 
   } catch (e) {
