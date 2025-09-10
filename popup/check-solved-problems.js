@@ -7,4 +7,4 @@ function resetSolved() {
   })
 }
 
-document.getElementById("reset").addEventListener("clicked", resetSolved)
+document.getElementById("reset").addEventListener("click", resetSolved)
